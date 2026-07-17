@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import Terser from '@rollup/plugin-terser';
 
 export default defineConfig({
-	base: '',
+	base: '/jatlab/',
     esbuild: {
     target: 'es2022'
   }, build: {

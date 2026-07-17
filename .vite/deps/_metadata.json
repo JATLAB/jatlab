@@ -2,7 +2,36 @@
   "hash": "54282f7d",
   "configHash": "f27faeab",
   "lockfileHash": "e0a47d11",
-  "browserHash": "7d292e26",
-  "optimized": {},
-  "chunks": {}
+  "browserHash": "e1db2d28",
+  "optimized": {
+    "highcharts": {
+      "src": "../../node_modules/highcharts/highcharts.js",
+      "file": "highcharts.js",
+      "fileHash": "a1e36034",
+      "needsInterop": true
+    },
+    "highcharts/modules/contour": {
+      "src": "../../node_modules/highcharts/modules/contour.js",
+      "file": "highcharts_modules_contour.js",
+      "fileHash": "17fa06b8",
+      "needsInterop": true
+    },
+    "highcharts/modules/heatmap": {
+      "src": "../../node_modules/highcharts/modules/heatmap.js",
+      "file": "highcharts_modules_heatmap.js",
+      "fileHash": "21effc87",
+      "needsInterop": true
+    },
+    "fft-js": {
+      "src": "../../node_modules/fft-js/index.js",
+      "file": "fft-js.js",
+      "fileHash": "2f5f1c69",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "chunk-BUSYA2B4": {
+      "file": "chunk-BUSYA2B4.js"
+    }
+  }
 }
