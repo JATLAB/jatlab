@@ -178,8 +178,11 @@ export function surf(type, aoa, xspan, yspan){
 	chart.addSeries({data:r, type: type,lineWidth:type=='contour'?1:0 });
 	chart.update({tooltip:{pointFormat:`{point.x},{point.y}={point.value}`}});
 }
-export function legend(...titles){
-	for(let i=0;i<titles.length;i++)chart.series[i].update({name:titles[i]});
+export function legend(...names ){
+	for(let i=0;i<names.length;i++)chart.series[i].update({ name: names[i] });
+}
+export function title(title: string){
+	chart.update({title:{text: title}});
 }
 export function logspace(x1,x2,n){
 	n=n??50;
@@ -290,6 +293,8 @@ if (typeof window !== 'undefined') {
 			window[prop]=function(x,y){
 				if(Array.isArray(x)) return x.map((xu,idx) => {return Math[prop](xu,y[idx]);}); else return Math[prop](x,y);
 			}			
+		}else{
+			window[prop]=Math[prop];
 		}
 	});
 	window.plot = plot; window.semilogx=semilogx; window.semilogy=semilogy; window.loglog=loglog;
