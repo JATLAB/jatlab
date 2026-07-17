@@ -69,6 +69,7 @@ export function imag(aoa:number[]|number[][]){
 	else{		let c= aoa as number[]; return c[1];	}
 }
 HighCharts.setOptions({
+	credits:{enabled:false},
 	accessibility: {enabled: false},
 	chart: {zooming: {type: 'xy'}, animation: false,  }, 
 	plotOptions: { 
