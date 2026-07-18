@@ -135,6 +135,7 @@ export function plot(...args) {
 }
 var hold = false;
 export function _plot(...args){			
+	document.getElementById("helpText")?.remove();
 	let opt={};
 	if(typeof args[args.length-1]==='string') {
 		opt.color=args.pop();		
@@ -187,13 +188,13 @@ export function title(title: string){
 export function logspace(x1,x2,n){
 	n=n??50;
 	let r=[]; let step=(x2-x1)/n;
-	for(let x=x1;x<=x2-step;x+=step)r.push(Math.pow(10,x));
+	for(let x=x1;x<x2-step/2;x+=step)r.push(Math.pow(10,x));
 	return r;
 }
 export function linspace(x1,x2,n){
 	n=n??50;
 	let r=[]; let step=(x2-x1)/n;
-	for(let x=x1;x<=x2-step;x+=step)r.push(x);
+	for(let x=x1;x<x2-step/2;x+=step)r.push(x);
 	return r;
 }
 export function holdon(){ hold=true; }
@@ -281,7 +282,11 @@ export function csvwrite(aoa:number[][],fn:string){
 	document.body.appendChild(a);	a.click();
 	document.body.removeChild(a); 	URL.revokeObjectURL(url); 
 }
-
+var n_digits=4;
+export function digits(d){
+	if(!d) console.log(`Displaying ${n_digits} decimal digits`);
+	else n_digits=d;
+}
 if (typeof window !== 'undefined') {
 	Object.getOwnPropertyNames(Math).forEach(prop => {
 		let arglen=Math[prop].length;
@@ -299,11 +304,13 @@ if (typeof window !== 'undefined') {
 	});
 	window.plot = plot; window.semilogx=semilogx; window.semilogy=semilogy; window.loglog=loglog;
 	window.cplot=cplot; window.holdon=holdon; window.holdoff=holdoff; window.chart=chart;
+	window.title=title;
 	window.legend=legend; window.ode23=ode23; window.ode=ode; window.contour=contour; window.heatmap=heatmap; 
 	window.csvread=csvread; window.csvwrite=csvwrite; window.csvread2=csvread2;
 	window.figure=figure; window.close=close; window.fft=fft; window.ifft=ifft; 
 	window.abs=abs; window.angle=angle; window.real=real; window.imag=imag; window.mean=mean; window.sum=sum; window.rms=rms; 
 	window.linspace=linspace; window.logspace=logspace;
+
 }
 
 
