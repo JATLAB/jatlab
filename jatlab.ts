@@ -21,19 +21,43 @@ export function abs(aoa:number[]|number[][]|number){
 		let c= aoa as number[]; return Math.sqrt( c.reduce((p,c)=>p+c*c, 0) );
 	}
 }
+function add_scalar_to_vector(s,v){
+	if(Array.isArray(v[0])){
+		return v.map((vu)=>vu.map((vuu)=>vuu+s));
+	}else
+		return v.map((vu)=>vu+s);		
+}
+function add_vector_to_vector(v1,v2){
+	if(Array.isArray(v1[0])){
+		return v1.map((vu,i)=>vu.map((vuu,j)=>vuu+v2[i][j]));
+	}else
+		return v1.map((vu,i)=>vu+v2[i]);		
+}
 export function add(a,b){
 	let isa_a=Array.isArray(a), isa_b=Array.isArray(b);
 	if(!isa_a && !isa_b)return a+b;
-	if(!isa_a && isa_b)a=Array(b.length).fill(a);
-	if(isa_a && !isa_b)b=Array(a.length).fill(b);
-	return a.map((au,i)=>au+b[i]);
+	if(!isa_a && isa_b)return add_scalar_to_vector(a,b);
+	if(isa_a && !isa_b)return add_scalar_to_vector(b,a);
+	return add_vector_to_vector(a,b);
+}
+function scale_vector(s,v){
+	if(Array.isArray(v[0])){
+		return v.map((vu)=>vu.map((vuu)=>vuu*s));
+	}else
+		return v.map((vu)=>vu*s);		
+}
+function scale_vector_elementwise(v1,v2){
+	if(Array.isArray(v1[0])){
+		return v1.map((vu,i)=>vu.map((vuu,j)=>vuu*v2[i][j]));
+	}else
+		return v1.map((vu,i)=>vu*v2[i]);		
 }
 export function scale(a,b){
 	let isa_a=Array.isArray(a), isa_b=Array.isArray(b);
-	if(!isa_a && !isa_b)return a+b;
-	if(!isa_a && isa_b)a=Array(b.length).fill(a);
-	if(isa_a && !isa_b)b=Array(a.length).fill(b);
-	return a.map((au,i)=>au*b[i]);
+	if(!isa_a && !isa_b)return a*b;
+	if(!isa_a && isa_b)scale_vector(a,b);
+	if(isa_a && !isa_b)scale_vector(b,a);
+	return scale_vector_elementwise(a,b);
 }
 export function dot(a,b){
 	return scale(a,b).reduce((p,c)=>p+c);
@@ -75,7 +99,7 @@ export function mean(aoa:number[]|number[][]){
 // input: a list of real number or a list of complex numbers in the form [real,imag], which results a single complex number
 export function sum(aoa:number[]|number[][]){
 	let isAA = Array.isArray(aoa[0]);
-	if(isAA)return (aoa as number[][]).reduce((p,c)=>[p[0]+c[0],p[1]+c[1]]);  // array of [r,i]
+	if(isAA)return (aoa as number[][]).reduce((p,c)=> p.map((pu,i)=>pu+c[i]) );  // array of [r,i]
 	else{
 		let c= aoa as number[]; return c.reduce((p,c)=>p+c);		// real array
 	}

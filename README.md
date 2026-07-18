@@ -45,6 +45,39 @@ scale(a,b)	  // [5, 10, 15]
 dot(a,b)	  // 30
 ```
 
+### Matrix
+Javascript does not have matrix either, so "array of array" like below is used to represent matrix:
+```js
+M=[ 
+  [u11,u12,u13,...], 
+  [u21,u22,u23,...],
+  [u31,u32,u33,...],
+  ...
+]
+M[1][0]  //u21, note array indice starts at 0 in Javascript
+```
+All math functions are expanded to support both arrays and matrices elementwise, except:
+- For `abs`, if given a matrix, it will find vector length of each sub vectors and returns an array of lengths
+- For `mean` and `rms`, if given a matrix, will treat all elements in the matrix as a single array and return a single scalar representing the mean or rms.
+- For `sum` if given matrix will return an array of sums, for example
+	```js
+	sum([[1,2,3],[10,10,10],[5,5,5]])   // [16, 17, 18]
+	``` 
+- `dot` only supports two 1D-array as input
+
+A matrix can be given directly to 3D plot functions `heatmap` or `contour`. 
+
+### Javascript Ways of Manipulating Array
+Javascript uses in my opinion less cryptic syntax to manipulate arrays:
+```js
+a=[1,2,3,4,5];
+a.slice(2,4)		// [3,4], in MATLAB a(3:4)
+a.push(6)			// [1,2,3,4,5,6], in MATLAB a(end+1)=6
+a.unshift(0)		// [0,1,2,3,4,5,6], in MATLAB a=[0,a];
+u=a.pop()			// u=6, a=[0,1,2,3,4,5], in MATLAB u=a(1); a=a(2:end)
+w=a.shift()			// w=0, a=[1,2,3,4,5],  in MATLAB w=a(end);a=a(1:end-1)
+```
+
 ### 3D Plotting of Time Marched Burger's Equation dy/dt = -y*dy/dx
 ```js
 function dwdt(t,y){
