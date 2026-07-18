@@ -14,14 +14,14 @@ With JATLAB, from modern Desktop web browsers (Chrome,Edge,etc) load [jatlab.git
 - All Javascript math functions available in Math.* can be used *without* typing `Math.` in front, such as:
 	- `sin`,`cos`,`tan`,`exp`,`log10`,`log`,`sqrt`,...
 	- Most of these functions are extended to *accept 1D or 2D array as input* and returns 1D or 2D array
-	- Many MATLAB statistic functions such as `rms`,`mean`,`abs`, `sum`, `max`, `min`. They support 1D array of real or complex (2 element array) numbers. 
 - Most commonly used MATLAB features are availble:
 	- Plotting: `plot`,`figure`,`close`,`holdon`,`holdoff`,`legend`,`xlabel`,`ylabel`,`title`,`semilogx`,`semilogy`,`loglog`
 	- Some 3D Plotting: `contour`,`heatmap`
 	- Saving and loading CSV files: `csvread`,`csvwrite`
-	- FFT: `fft`,`ifft`,`hanning`
+	- FFT: `fft`,`hanning`
+	- Many MATLAB statistic functions such as `rms`,`mean`,`abs`, `sum`, `max`, `min`. They support 1D array of real or complex (2 element array) numbers. 	
 	- Complex numbers: `abs`,`angle`,`real`,`imag`. Complex numbers are in the 2-element array *[real_part, imag_part]*. 
-	- `linspace`,`logspace`,`ode23`
+	- `rand`,`randn`,`linspace`,`logspace`,`ode23`
 
 MATLAB is vast, but I hope over time people will contribute their expertise to this project to expand these features. 
 
@@ -36,7 +36,7 @@ legend('sin','cos');
 [![Basic plot example](example1.png)](http://jatlab.github.io/)
 
 ### Basic Arithmetic of Arrays
-Unlike MATLAB Javascript does not allow elementwise "+" or "*" for vector/arrays. Do the following instead:
+Unfortunately Javascript does not allow elementwise "+" or "*" for vector/arrays like MATLAB. So for arrays, do the following instead:
 ```js
 a=[1,2,3]; b=[5,5,5]; 
 scale(a,2)    // [2, 4, 6]
@@ -64,7 +64,7 @@ xlabel('x'); ylabel('Time');
 ```js
 csvwrite(y,'burger.csv');
 ```
-[![Download example](download_example.png)](http://jatlab.github.io/)
+[![Download example|300](download_example.png)](http://jatlab.github.io/)
 Later
 ```js
 let yt = await csvread();
@@ -85,7 +85,17 @@ function dsm(vin){
 		accum-=1; return 1;
 	}else return 0;
 }
-let dout = add(0.5,scale(0.5,sin(linspace(0,100*PI,65536)))).map((vin)=>dsm(vin));
-semilogx(scale(20,log10(abs(fft(dout)))))
+let vin = add(0.5,scale(0.5,sin(linspace(0,100*PI,65536))));
+let dout = vin.map((vin)=>dsm(vin));
+plot(dout); holdon(); plot(vin,'red');
 ```
+[![DSM example](dsm_example.png)](http://jatlab.github.io/)
+
+```js
+figure(2);
+semilogx(scale(20,log10(abs(fft(dout)))));
+ylabel('dB')
+```
+
 [![FFT example](fft_example.png)](http://jatlab.github.io/)
+
