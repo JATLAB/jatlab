@@ -134,7 +134,8 @@ M=[
 ]
 M[1][0]  //u21, note array indice starts from 0 in Javascript
 ```
-A matrix can be given directly to 3D plot functions `heatmap` or `contour`. All math functions are expanded to support both arrays and matrices elementwise, except:
+Use `transpose(M)`,`mcat(M1,M2)`,`mapply(M,[x,y,z,...])` for transposition, matrix multiplication (concatination of transform), multiplication with a vector (1D array), respectively.
+ All math functions are expanded to support both arrays and matrices elementwise, except:
 - For `abs`, if given a matrix, it will find vector length of each sub vectors and returns an array of lengths, for example:
 	```js
 	abs([[3,4],[1,-1]])   // [5, sqrt(2)]
@@ -146,14 +147,15 @@ A matrix can be given directly to 3D plot functions `heatmap` or `contour`. All 
 - For `mean` and `rms`, if given a matrix, will treat all elements in the matrix as a single array and return a single scalar representing the mean or rms of every element.
 - `dot` only supports two 1D-array as input
 
+A 2D array / matrix can be given directly to 3D plot functions `heatmap` or `contour`. 
 
 Use `map` or `reduce`:
 ```js
 A=[[c,s],
    [-s,c]];
 b=[x,y];
-A.map(v=>dot(v,b));     // Multiply vector (x,y) with rotation matrix A: [cx+sy,-sx+cy]
-mean(array_of_matrix.map((m)=>mean));  // returns mean of all elements of 3D matrix
+A.map(v=>dot(v,b));     // Multiply vector (x,y) with rotation matrix A. Equivalent to mapply(A,b)
+[M1,M2,M3,...].reduce((p,m)=>p+sum(m),0);  // returns sum of all elements of an array of matrices
 ```
 
 
