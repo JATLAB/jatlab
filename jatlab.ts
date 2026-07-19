@@ -1,6 +1,8 @@
 import * as HighCharts from 'highcharts';
 import 'highcharts/modules/contour';
 import 'highcharts/modules/heatmap';
+import 'highcharts/modules/exporting';
+
 //ContourModule(HighCharts);
 import * as FFT from 'fourier-transform';
 
@@ -62,7 +64,35 @@ export function scale(a,b){
 export function dot(a,b){
 	return scale(a,b).reduce((p,c)=>p+c);
 }
+export function transpose(matrix){
+	if(!Array.isArray(matrix[0])) {
+		console.error('input to transpose() needs to be array of array. A single array is always column vector'); return;
+	}
+	return matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));	
+}
+export function mcat(matrixLeft,matrixRight){
+	const rowsA = matrixLeft.length;
+  const colsA = matrixLeft[0].length;
+  const rowsB = matrixRight.length;
+  const colsB = matrixRight[0].length;
 
+  if (colsA !== rowsB) {
+    console.error("Cannot multiply: Columns of A must match Rows of B."); return;
+  }
+  const result = Array.from({ length: rowsA }, () => new Array(colsB).fill(0));
+
+  for (let i = 0; i < rowsA; i++) {
+    for (let j = 0; j < colsB; j++) {
+      for (let k = 0; k < colsA; k++) {
+        result[i][j] += matrixLeft[i][k] * matrixRight[k][j];
+      }
+    }
+  }
+  return result;
+}
+export function mapply(matrix, vectorRight){
+	return matrix.map(row=>dot(row,vectorRight));
+}
 export function max(aoa:number[]|number[][]){
 	let isAA = Array.isArray(aoa[0]);
 	if(isAA)return (aoa as number[][]).map(c=>c.reduce((p,c)=>Math.max(p,c)) ).reduce((p,c)=>Math.max(p,c)) ;
@@ -128,11 +158,15 @@ HighCharts.setOptions({
 	chart: {zooming: {type: 'xy'}, animation: false,  }, 
 	plotOptions: { 
 		series: { animation: false } ,
-		scatter: { lineWidth: 1, marker: { radius: 2 } }
+		scatter: { lineWidth: 2, marker: { radius: 4 } }
 	}
  });
 
-const hcOptions : HighCharts.Options = { title:{text:null}, yAxis: { title: { text: null }}, };
+const hcOptions : HighCharts.Options = { 
+	title:{text:null}, 
+	yAxis: { title: { text: null }}, 
+	exporting: {enabled: false},
+	};
 let chart : HighCharts.Chart = HighCharts.chart('chart_1',hcOptions);
 
 const charts:HighCharts.Chart[]=[];  charts[1]=chart;
@@ -161,11 +195,22 @@ export function close(num){
 	delete charts[num];
 	figure(num-1);	
 }
+export function gridon(){
+	chart.update({ xAxis: { gridLineWidth: 1 }, yAxis: { gridLineWidth: 1 }});
+}
+export function gridoff(){
+	chart.update({ xAxis: { gridLineWidth: 0 }, yAxis: { gridLineWidth: 0 }});
+}
+export function axis(limits:number[]){
+	chart.xAxis[0].setExtremes(limits[0], limits[1]);
+	chart.yAxis[0].setExtremes(limits[2], limits[3]);
+}
 export function cplot(){
 	document.getElementById("helpText")?.remove();
 	while (chart.series.length > 0) {
 	   chart.series[0].remove(false); // pass false to avoid continuous re-rendering
 	}
+	chart.update({	exporting: {enabled: true}});
 	chart.redraw();		
 }
 export function semilogx(...args){
@@ -206,6 +251,7 @@ export function _plot(...args){
 		chart.addSeries({data: keys.map((key, index) => [key, vs[index]]), type: 'scatter', ...opt});
 	}
 }
+
 export function heatmap(aoa,xspan,yspan) {
 	surf('heatmap',aoa,xspan,yspan);
 }
@@ -388,7 +434,7 @@ if (typeof window !== 'undefined') {
 		}
 	});
 	window.plot = plot; window.semilogx=semilogx; window.semilogy=semilogy; window.loglog=loglog;
-	window.cplot=cplot; window.holdon=holdon; window.holdoff=holdoff; window.chart=chart;
+	window.cplot=cplot; window.holdon=holdon; window.holdoff=holdoff; window.chart=chart; window.gridon=gridon; window.gridoff=gridoff; window.axis=axis;
 	window.title=title; window.xlabel=xlabel; window.ylabel=ylabel; window.zlabel=zlabel;
 	window.legend=legend; window.ode23=ode23; window.ode=ode; window.contour=contour; window.heatmap=heatmap; 
 	window.csvread=csvread; window.csvwrite=csvwrite; window.csvread2=csvread2;
@@ -396,7 +442,7 @@ if (typeof window !== 'undefined') {
 	window.abs=abs; window.angle=angle; window.real=real; window.imag=imag; window.mean=mean; window.sum=sum; window.rms=rms; window.max=max; window.min=min;
 	window.linspace=linspace; window.logspace=logspace;
 	window.hanning=hanning; 
-	window.add=add; window.scale=scale; window.dot=dot;
+	window.add=add; window.scale=scale; window.dot=dot; window.transpose=transpose; window.mcat=mcat; window.mapply = mapply;
 	window.rand=Math.random; window.randn=randn;
 
 

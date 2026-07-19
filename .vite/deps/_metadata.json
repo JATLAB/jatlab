@@ -2,37 +2,43 @@
   "hash": "576d25bb",
   "configHash": "f27faeab",
   "lockfileHash": "2b0213ab",
-  "browserHash": "0ab33a3f",
+  "browserHash": "4ad0698b",
   "optimized": {
     "highcharts": {
       "src": "../../node_modules/highcharts/highcharts.js",
       "file": "highcharts.js",
-      "fileHash": "d41c84c4",
+      "fileHash": "dfd6b454",
       "needsInterop": true
     },
     "highcharts/modules/contour": {
       "src": "../../node_modules/highcharts/modules/contour.js",
       "file": "highcharts_modules_contour.js",
-      "fileHash": "eac7c3f6",
+      "fileHash": "9970c778",
       "needsInterop": true
     },
     "highcharts/modules/heatmap": {
       "src": "../../node_modules/highcharts/modules/heatmap.js",
       "file": "highcharts_modules_heatmap.js",
-      "fileHash": "c8507121",
+      "fileHash": "941be177",
       "needsInterop": true
     },
     "fft-js": {
       "src": "../../node_modules/fft-js/index.js",
       "file": "fft-js.js",
-      "fileHash": "e0a9638a",
+      "fileHash": "2acaa5a6",
       "needsInterop": true
     },
     "fourier-transform": {
       "src": "../../node_modules/fourier-transform/index.js",
       "file": "fourier-transform.js",
-      "fileHash": "0c927534",
+      "fileHash": "472ea611",
       "needsInterop": false
+    },
+    "highcharts/modules/exporting": {
+      "src": "../../node_modules/highcharts/modules/exporting.js",
+      "file": "highcharts_modules_exporting.js",
+      "fileHash": "ea47d6c5",
+      "needsInterop": true
     }
   },
   "chunks": {

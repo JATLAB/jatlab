@@ -15,7 +15,7 @@ With JATLAB, from modern Desktop web browsers (Chrome,Edge,etc) load [jatlab.git
 	- `sin`,`cos`,`tan`,`exp`,`log10`,`log`,`sqrt`,...
 	- Most of these functions are extended to *accept 1D or 2D array as input* and returns 1D or 2D array
 - Most commonly used MATLAB features are availble:
-	- Plotting: `plot`,`figure`,`close`,`holdon`,`holdoff`,`legend`,`xlabel`,`ylabel`,`title`,`semilogx`,`semilogy`,`loglog`
+	- Plotting: `plot`,`figure`,`close`,`holdon`,`holdoff`,`legend`,`xlabel`,`ylabel`,`gridon`,`gridoff`,`axis`,`title`,`semilogx`,`semilogy`,`loglog`
 	- Some 3D Plotting: `contour`,`heatmap`
 	- Saving and loading CSV files: `csvread`,`csvwrite`
 	- FFT: `fft`,`hanning`
@@ -85,10 +85,31 @@ plot(dout); holdon(); plot(vin,'red');
 ```js
 figure(2);
 semilogx(scale(20,log10(abs(fft(dout)))));
+holdon();
+semilogx(scale(20,log10(abs(fft(scale(hanning(dout.length),dout))))));
 ylabel('dB')
+legend('rectangular window','hanning window')
 ```
 
 [![FFT example](fft_example.png)](http://jatlab.github.io/)
+
+### Transformation by Matrix
+```js
+r1=[[cos(1),sin(1)],[-sin(1),cos(1)]];
+v0=[0,1];
+trail=[];
+for(let i=0;i<100;i++){trail.push(v0=mapply(r1,v0));}
+trail=transpose(trail);
+plot(trail[0],trail[1]); holdon();
+
+r1=[[cos(1),sin(1)],[-sin(1),cos(1)+0.07]];
+v0=[0,1];
+trail=[];
+for(let i=0;i<100;i++){trail.push(v0=mapply(r1,v0));}
+trail=transpose(trail);
+plot(trail[0],trail[1],'red')
+```
+[![FFT example](mapply_example.png)](http://jatlab.github.io/)
 
 ## Limitations and Differences from MATLAB
 
@@ -125,8 +146,13 @@ A matrix can be given directly to 3D plot functions `heatmap` or `contour`. All 
 - For `mean` and `rms`, if given a matrix, will treat all elements in the matrix as a single array and return a single scalar representing the mean or rms of every element.
 - `dot` only supports two 1D-array as input
 
-If you need higher dimension like array of array of array, use `map` or `reduce`:
+
+Use `map` or `reduce`:
 ```js
+A=[[c,s],
+   [-s,c]];
+b=[x,y];
+A.map(v=>dot(v,b));     // Multiply vector (x,y) with rotation matrix A: [cx+sy,-sx+cy]
 mean(array_of_matrix.map((m)=>mean));  // returns mean of all elements of 3D matrix
 ```
 
