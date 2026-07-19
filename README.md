@@ -154,7 +154,7 @@ Use `map` or `reduce`:
 A=[[c,s],
    [-s,c]];
 b=[x,y];
-A.map(v=>dot(v,b));     // Multiply vector (x,y) with rotation matrix A. Equivalent to mapply(A,b)
+A.map(v=>dot(v,b));     // Multiply vector (x,y) with matrix A. Equivalent to mapply(A,b)
 [M1,M2,M3,...].reduce((p,m)=>p+sum(m),0);  // returns sum of all elements of an array of matrices
 ```
 
