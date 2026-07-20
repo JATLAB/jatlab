@@ -68,7 +68,7 @@ This produces the same plot except in log scale.
 
 Note that due to security Javascript is not allowed to read programmatically generated file name, the user needs to manually select the CSV file using File chooser.
 
-### Integral Form of Burger's equation d($\Delta$ $\overline{y(c)}$)/dt = 0.5 $\times$ ($y^2$(c- $\Delta$ /2)-$y^2$(c+ $\Delta$ /2))
+### Integral Form of Burger's equation d($\Delta$ $\overline{y(c)}$)/dt = 0.5 $\times$ ($y^2$(c- $\Delta$ /2)- $y^2$(c+ $\Delta$ /2))
 ```js
 function dwdt(t,y){
 	let n=y.length; let dx=1/n; 
