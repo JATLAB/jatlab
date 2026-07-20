@@ -93,6 +93,23 @@ export function mcat(matrixLeft,matrixRight){
 export function mapply(matrix, vectorRight){
 	return matrix.map(row=>dot(row,vectorRight));
 }
+export function sample1D_cell_centered(vector:number[], at_x:number, boundary_value:number){
+	let w=vector.length;
+	// at_x: 0.5~w-0.5, at_y: 0.5~h-0.5
+	if(at_x<0){return 2*boundary_value-vector[Math.floor(-at_x)];}
+	if(at_x>w){return 2*boundary_value-vector[Math.floor(2*w-at_x)];}
+	return vector[Math.floor(at_x)];
+}
+export function sample2D_cell_centered(aoa:number[][], at_x:number,at_y:number, boundary_value:number){
+	let w=aoa[0].length; let h=aoa.length;
+	// at_x: 0.5~w-0.5, at_y: 0.5~h-0.5
+	if(at_x<0){return 2*boundary_value-aoa[Math.floor(at_y)][Math.floor(-at_x)];}
+	if(at_x>w){return 2*boundary_value-aoa[Math.floor(at_y)][Math.floor(2*w-at_x)];}
+	if(at_y<0) {return 2*boundary_value-aoa[Math.floor(-at_y)][Math.floor(at_x)];}
+	if(at_y>h) {return 2*boundary_value-aoa[Math.floor(2*h-at_y)][Math.floor(at_x)];}
+	return aoa[Math.floor(at_y)][Math.floor(at_x)];
+}
+
 export function max(aoa:number[]|number[][]){
 	let isAA = Array.isArray(aoa[0]);
 	if(isAA)return (aoa as number[][]).map(c=>c.reduce((p,c)=>Math.max(p,c)) ).reduce((p,c)=>Math.max(p,c)) ;
@@ -405,12 +422,57 @@ export function hanning(N:number){
 	}
 	return win;
 }
-export function randn(){
+function _randn(){
 	let u1 = 1 - Math.random(); // Subtracted from 1 to avoid log(0)
     let u2 = Math.random();
     // Box-Muller transform formula
-    return Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+    return Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);	
 }
+export function randn(H:number|null,W:number|null){
+	if(H===undefined)return _randn();
+	else{
+		const result = Array.from({ length: H }, () => new Array(W).fill(0));
+		for(let i=0;i<H;i++)
+			for(let j=0;j<W;j++)
+				result[i][j]=_randn();
+		return result;
+	}
+}
+export function rand(H:number|null,W:number|null){
+	if(H===undefined)return Math.random()
+	else{
+		const result = Array.from({ length: H }, () => new Array(W).fill(0));
+		for(let i=0;i<H;i++)
+			for(let j=0;j<W;j++)
+				result[i][j]=Math.random();
+		return result;
+	}
+}
+export function gmat(H:number,W:number,fn:(i:number,j:number)=>number){
+	const result = Array.from({ length: H }, () => new Array(W).fill(0));
+	for(let i=0;i<H;i++)
+		for(let j=0;j<W;j++)
+			result[i][j]=fn(i,j);
+	return result;	
+}
+function _randi(spec:number|[number,number]){
+	if(Array.isArray(spec)){
+		return Math.floor(Math.random()*(spec[1]-spec[0]))+spec[0];
+	}else{
+		return Math.floor(Math.random()*spec);
+	}
+}
+export function randi(spec:number|[number,number], H:number|null,W:number|null){
+	if(H===undefined)return _randi(spec);
+	else{
+		const result = Array.from({ length: H }, () => new Array(W).fill(0));
+		for(let i=0;i<H;i++)
+			for(let j=0;j<W;j++)
+				result[i][j]=_randi(spec);
+		return result;
+	}
+}
+
 if (typeof window !== 'undefined') {
 	Object.getOwnPropertyNames(Math).forEach(prop => {
 		let arglen=Math[prop].length;
@@ -443,9 +505,39 @@ if (typeof window !== 'undefined') {
 	window.linspace=linspace; window.logspace=logspace;
 	window.hanning=hanning; 
 	window.add=add; window.scale=scale; window.dot=dot; window.transpose=transpose; window.mcat=mcat; window.mapply = mapply;
-	window.rand=Math.random; window.randn=randn;
-
-
+	window.rand=rand; window.randn=randn; window.randi=randi; window.gmat=gmat;
+	window.sample2D_cell_centered = sample2D_cell_centered;
+	window.sample1D_cell_centered = sample1D_cell_centered;
 }
 
 
+/*
+
+### Generation of MATLAB Logo div(grad(Z))+$\lambda$ Z=0
+```js
+let lambda=1;
+function dzdt(t,z){
+	let r=Array(100).fill(Array(100).fill(0));
+	let w=z[0].length, h=z.length;
+	for(let y=0;y<z.length;y+=1){
+		for(let x=0;x<z[0].length;x+=1){
+			if(x<w/2 && y<h/2)r[y][x]=0;
+			else{
+				let center= sample2D_cell_centered(z,x+0.5,y+0.5,0);
+				let top=y<h/2&&x<=w/2+1? -center: sample2D_cell_centered(z,x+0.5,y-0.5,0);
+				let bottom= sample2D_cell_centered(z,x+0.5,y+1.5,0);
+				let left=x<w/2&&y<=h/2+1? -center: sample2D_cell_centered(z,x-0.5,y+0.5,0);
+				let right= sample2D_cell_centered(z,x+1.5,y+0.5,0);
+				// laplacian is positive if in a sink hole, grad vector all pointing out
+				r[y][x]=(left+right+top+bottom)-4*center +lambda*center;
+			}
+		}
+	}
+	return r;
+}
+z0=gmat(100,100,(i,j)=> i<50&&j<50? 0:exp( -((i/100-0.6)**2)- (j/100-0.6)**2) );
+let tspan = linspace(0,10,1000); 
+let z=ode(dzdt, tspan, z0);
+
+```
+*/

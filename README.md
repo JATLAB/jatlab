@@ -38,8 +38,8 @@ legend('sin','cos');
 ### 3D Plotting of Time Marched Burger's Equation dy/dt = -y*dy/dx
 ```js
 function dwdt(t,y){
-let n=y.length; let dx=1/n; 
-return y.map( (yu,i)=>-yu*(y[(i+1)%n]-y[i])/2/dx );
+	let n=y.length; let dx=1/n; 
+	return y.map( (yu,i)=>-yu*(y[(i+1)%n]-y[i])/2/dx );
 }
 
 let tspan = linspace(0,0.32,100); 
@@ -49,6 +49,7 @@ heatmap(y);
 xlabel('x'); ylabel('Time');
 ```
 [![3D plot example](example2.png)](http://jatlab.github.io/)
+
 
 ### Saving and Loading CSV Files
 ```js
@@ -66,6 +67,46 @@ This produces the same plot except in log scale.
 [![3D plot example 2](example3.png)](http://jatlab.github.io/)
 
 Note that due to security Javascript is not allowed to read programmatically generated file name, the user needs to manually select the CSV file using File chooser.
+
+### Integral Form of Burger's equation d($\Delta$ $\overline{y(c)}$)/dt = 0.5 $\times$ ($y^2$(c-$\Delta$/2)-$y^2$(c+$\Delta$/2))
+```js
+function dwdt(t,y){
+	let n=y.length; let dx=1/n; 
+	
+	return y.map( (yu,i)=>{
+		let left=sample1D_cell_centered(y,i-0.5,0);
+		let current=sample1D_cell_centered(y,i+0.5,0);
+		let right=sample1D_cell_centered(y,i+1.5,0);
+		return (pow( (left+current)/2, 2) - pow( (right+current)/2, 2))*0.5/dx;
+	} );
+}
+let tspan = linspace(0,0.32,100); 
+let y0=sin(linspace(0,2*PI,100));
+let y=ode23(dwdt, tspan, y0);
+heatmap(y);
+xlabel('x'); ylabel('Time');
+```
+[![Finite volume example|300](fv_example.png)](http://jatlab.github.io/)
+
+### With Upwind Bias
+```js
+function dwdt(t,y){
+	let n=y.length; let dx=1/n; 
+	
+	return y.map( (yu,i)=>{
+		let left=sample1D_cell_centered(y,i-0.5,0);
+		let current=sample1D_cell_centered(y,i+0.5,0);
+		let right=sample1D_cell_centered(y,i+1.5,0);
+		
+		if(i<n/2)return( pow(left,2)-pow(current,2) )*0.5/dx;
+		else return( pow(current,2)-pow(right,2))*0.5/dx;
+	} );
+}
+let y=ode23(dwdt, tspan, y0);
+heatmap(y);
+xlabel('x'); ylabel('Time');
+```
+[![Finite volume upwind bias|300](upwind_bias.png)](http://jatlab.github.io/)
 
 ### FFT Plot of Delta-Sigma Modulator
 ```js
@@ -110,6 +151,7 @@ trail=transpose(trail);
 plot(trail[0],trail[1],'red')
 ```
 [![FFT example](mapply_example.png)](http://jatlab.github.io/)
+
 
 ## Limitations and Differences from MATLAB
 
